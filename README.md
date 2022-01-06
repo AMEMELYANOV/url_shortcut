@@ -12,7 +12,7 @@
 - Выполнение переадресации по уникальному коду URL (выполняется без авторизации).
 - Вывод статистики по запросам.
 # Применяемые технологии:
-* Java 14
+* Java 11
 * Spring Boot 2
 * Spring Security & JWT authorization
 * Spring Data JPA

@@ -32,12 +32,13 @@ public class SiteService {
     public SiteRegResponse registerSite(Site site) {
         Site siteFromDB = siteRepository.findBySite(site.getSite());
         if (siteFromDB != null) {
-            return new SiteRegResponse("false", siteFromDB.getLogin(), siteFromDB.getPassword());
+            return new SiteRegResponse("false", siteFromDB.getLogin(), "Сайт зарегистрирован ранее!");
         }
+        String password = generatorService.generatePassword();
         site.setLogin(generatorService.generateLogin());
-        site.setPassword(encoder.encode(generatorService.generatePassword()));
+        site.setPassword(encoder.encode(password));
         Site newSite = siteRepository.save(site);
-        return new SiteRegResponse("true", newSite.getLogin(), newSite.getPassword());
+        return new SiteRegResponse("true", newSite.getLogin(), password);
     }
 
     public Site findByLogin(String login) {
