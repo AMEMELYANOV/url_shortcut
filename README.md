@@ -120,3 +120,21 @@ C телом JSON объекта:
 {"url": "https://job4j.ru/profile/exercise/106/task-view/532", "total": 103}
 `}`
 ![alt text](images/shortcut_img_5.jpg)
+
+##Запуск проекта с использованием Docker Compose
+### 1. Клонирование проекта.
+В CLI выполнить команду - `git clone https://github.com/AMEMELYANOV/job4j_url_shortcut.git`.
+В текущей директории будет создана папка `job4j_url_shortcut`, содержащая проект.
+
+### 2. Сборка проекта.
+Перейти в директорию проекта.
+В CLI выполнить команду - `mvn install`.
+
+### 3. Сборка проекта в Docker image.
+В CLI выполнить команду - `docker build -t shortcut .`.
+
+### 4. Запуск проекта с использованием docker-compose.
+В CLI выполнить команду - `docker-compose up`.
+
+### 5. Работа с проектом.
+Работа с проектом осуществляется через любое приложение поддерживающее REST запросы, например CURL или Postman.
