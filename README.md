@@ -138,3 +138,29 @@ C телом JSON объекта:
 
 ### 5. Работа с проектом.
 Работа с проектом осуществляется через любое приложение поддерживающее REST запросы, например CURL или Postman.
+
+##Работа проекта через K8s 
+Перед выполнением развертывания необходимо перейти в подкаталог `/k8s`, далее все команды выполняются через CLI
+### 1. Создание Secret.
+Выполнить команду - `kubectl apply -f postgresdb-secret.yml`. 
+Выполнить проверку, что `secret` создан - `kubectl get secret`.
+
+### 2. Создание ConfigMap.
+Выполнить команду - `kubectl apply -f postgesdb-configmap.yml`.
+Выполнить проверку, что `configmap` создан - `kubectl get configmaps`.
+
+### 3. Создание deployment для Postgres.
+Выполнить команду - `kubectl apply -f postgresdb-deployment.yml`.
+Выполнить проверку, что pod - `postgresdb` создан - `kubectl get pods`.
+
+### 4. Создание deployment для Spring Boot.
+Выполнить команду - `kubectl apply -f spring-boot-deployment.yml`.
+Выполнить проверку, что pod - `spring-boot` создан - `kubectl get pods`.
+
+### 5. Проверка работоспособности.
+Выполнить команду - `kubectl get service`.
+Убеждаемся, что сервисы `postgresdb` и `spring-boot` запущены.
+Выполнить команду - `minikube service spring-boot-service` для получения ссылки, ip-адреса и порта для дальнейшей работы.
+
+### 6. Работа с проектом.
+Работа с проектом осуществляется через любое приложение поддерживающее REST запросы, например CURL или Postman.
