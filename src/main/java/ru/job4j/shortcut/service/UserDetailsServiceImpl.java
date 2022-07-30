@@ -11,6 +11,7 @@ import static java.util.Collections.emptyList;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
+    
     private final SiteService siteService;
 
     public UserDetailsServiceImpl(SiteService siteService) {

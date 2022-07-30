@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootApplication
-public class Job4jUrlShortcutApplication {
+public class ShortcutApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Job4jUrlShortcutApplication.class, args);
+        SpringApplication.run(ShortcutApplication.class, args);
     }
 
     @Bean

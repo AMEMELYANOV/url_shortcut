@@ -11,10 +11,12 @@ import ru.job4j.shortcut.repository.SiteRepository;
 import ru.job4j.shortcut.repository.URLRepository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 public class SiteService {
+
     private final SiteRepository siteRepository;
     private final GeneratorService generatorService;
     private final BCryptPasswordEncoder encoder;
@@ -47,7 +49,11 @@ public class SiteService {
 
     public List<Statistic> getStatistic() {
         String siteLogin = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Long siteId = siteRepository.findByLogin(siteLogin).getId();
+        Site site = siteRepository.findByLogin(siteLogin);
+        if (site == null) {
+            return Collections.emptyList();
+        }
+        Long siteId = site.getId();
         List<URL> urls = urlRepository.findAllBySiteId(siteId);
         List<Statistic> result = new ArrayList<>();
         for (URL url : urls) {

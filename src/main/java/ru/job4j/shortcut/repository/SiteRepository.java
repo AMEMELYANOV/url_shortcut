@@ -7,6 +7,7 @@ import ru.job4j.shortcut.model.Site;
 
 @Repository
 public interface SiteRepository extends CrudRepository<Site, Long> {
+
     Site findBySite(String site);
 
     Site findByLogin(String login);

@@ -1,8 +1,8 @@
 package ru.job4j.shortcut.service;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.apache.commons.lang3.RandomStringUtils;
 
 @Service
 public class GeneratorService {

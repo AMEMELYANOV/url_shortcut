@@ -9,6 +9,7 @@ import ru.job4j.shortcut.model.URL;
 import java.util.List;
 
 public interface URLRepository extends CrudRepository<URL, Long> {
+
     URL findByurl(String url);
 
     URL findByCode(String code);

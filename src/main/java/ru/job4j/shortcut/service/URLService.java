@@ -10,6 +10,7 @@ import ru.job4j.shortcut.repository.URLRepository;
 
 @Service
 public class URLService {
+
     private final URLRepository urlRepository;
     private final SiteRepository siteRepository;
     private final GeneratorService generatorService;
