@@ -1,5 +1,6 @@
 package ru.job4j.shortcut.config;
 
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -17,17 +18,12 @@ import ru.job4j.shortcut.service.UserDetailsServiceImpl;
 
 import static ru.job4j.shortcut.filter.JWTAuthenticationFilter.*;
 
+@AllArgsConstructor
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    public WebSecurity(UserDetailsServiceImpl userDetailsService,
-                       BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.userDetailsService = userDetailsService;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

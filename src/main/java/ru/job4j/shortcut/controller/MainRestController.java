@@ -1,5 +1,6 @@
 package ru.job4j.shortcut.controller;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,15 +11,11 @@ import ru.job4j.shortcut.service.URLService;
 
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 public class MainRestController {
     private final SiteService siteService;
     private final URLService urlService;
-
-    public MainRestController(SiteService siteService, URLService urlService) {
-        this.siteService = siteService;
-        this.urlService = urlService;
-    }
 
     @PostMapping("/registration")
     public SiteRegResponse registerSite(@RequestBody Site site) {

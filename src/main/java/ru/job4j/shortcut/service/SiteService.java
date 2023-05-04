@@ -1,5 +1,6 @@
 package ru.job4j.shortcut.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@AllArgsConstructor
 @Service
 public class SiteService {
 
@@ -21,15 +23,6 @@ public class SiteService {
     private final GeneratorService generatorService;
     private final BCryptPasswordEncoder encoder;
     private final URLRepository urlRepository;
-
-    public SiteService(SiteRepository siteRepository, GeneratorService generatorService,
-                       BCryptPasswordEncoder encoder, URLRepository urlRepository) {
-        this.siteRepository = siteRepository;
-        this.generatorService = generatorService;
-        this.encoder = encoder;
-        this.urlRepository = urlRepository;
-    }
-
 
     public SiteRegResponse registerSite(Site site) {
         Site siteFromDB = siteRepository.findBySite(site.getSite());
