@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/shortcut
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            on_contextual_creation: true
+
+generator:
+  login:
+    length: 10
+  password:
+    length: 8
+  URL:
+    length: 7
