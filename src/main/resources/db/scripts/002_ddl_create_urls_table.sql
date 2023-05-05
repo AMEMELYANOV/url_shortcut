@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS urls (
    id SERIAL PRIMARY KEY,
-   url VARCHAR UNIQUE,
+   url VARCHAR,
    code VARCHAR,
    site_id BIGINT,
    total INT

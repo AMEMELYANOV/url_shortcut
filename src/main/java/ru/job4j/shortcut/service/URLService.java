@@ -19,13 +19,13 @@ public class URLService {
 
     public URLResponse convertURL(URL url) {
         URL urlFromDB = urlRepository.findByurl(url.getUrl());
-        if (urlFromDB != null) {
+        String siteLogin = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long siteId = siteRepository.findByLogin(siteLogin).getId();
+        if (urlFromDB != null && siteId == urlFromDB.getSiteId()) {
             return new URLResponse(urlFromDB.getCode());
         }
-        String siteLogin = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Site site = siteRepository.findByLogin(siteLogin);
         String urlCode = generatorService.generateURL();
-        url.setSiteId(site.getId());
+        url.setSiteId(siteId);
         url.setCode(urlCode);
         urlRepository.save(url);
         return new URLResponse(urlCode);

@@ -226,13 +226,13 @@ C телом JSON объекта:
 
 <p><a href="#contents">К оглавлению</a></p>
 
-### <p id="0602">### 2. Сборка проекта в Docker image</p>
+### <p id="0602">2. Сборка проекта в Docker image</p>
 
 В CLI выполнить команду - `docker build -t shortcut .`.
 
 <p><a href="#contents">К оглавлению</a></p>
 
-### <p id="0603">### 3. Запуск проекта с использованием docker-compose</p>
+### <p id="0603">3. Запуск проекта с использованием docker-compose</p>
 
 В CLI выполнить команду - `docker-compose up`.
 
