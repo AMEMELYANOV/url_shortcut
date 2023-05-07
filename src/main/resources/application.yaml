@@ -12,6 +12,9 @@ spring:
         jdbc:
           lob:
             on_contextual_creation: true
+server:
+    error:
+      include-message: always
 
 generator:
   login:

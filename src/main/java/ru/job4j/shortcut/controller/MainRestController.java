@@ -1,7 +1,8 @@
 package ru.job4j.shortcut.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpHeaders;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +10,11 @@ import ru.job4j.shortcut.model.*;
 import ru.job4j.shortcut.service.SiteService;
 import ru.job4j.shortcut.service.URLService;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Контроллер основных действий с приложением
@@ -17,6 +22,7 @@ import java.util.List;
  * @author Alexander Emelyanov
  * @version 1.0
  */
+@Slf4j
 @AllArgsConstructor
 @RestController
 public class MainRestController {
@@ -32,6 +38,11 @@ public class MainRestController {
     private final URLService urlService;
 
     /**
+     * Объект для отображения данных
+     */
+    private final ObjectMapper objectMapper;
+
+    /**
      * Обрабатывает POST запрос, выполняет передачу сайта на
      * сервисный слой и возврат ответа о результатах регистрации.
      *
@@ -44,7 +55,7 @@ public class MainRestController {
     }
 
     /**
-     * Обрабатывает POST запрос, выполняет передачу сайта на
+     * Обрабатывает POST запрос, выполняет передачу кода url на
      * сервисный слой и возврат ответа с закодированным URL.
      *
      * @param url ссылка
@@ -56,27 +67,15 @@ public class MainRestController {
     }
 
     /**
-     * Обрабатывает GET запрос, выполняет передачу сайта на
+     * Обрабатывает GET запрос, выполняет передачу кода url на
      * сервисный слой и возврат ответа реального URL ресурса.
-     * Ответ добавляется в заголовки ответа приложения.
      *
      * @param code код url
      * @return объект ResponseEntity
      */
     @GetMapping("/redirect/{code}")
     public ResponseEntity<Void> redirect(@PathVariable String code) {
-        URL url = urlService.findByCode(code);
-        if (url == null) {
-            return new ResponseEntity<>(
-                    HttpStatus.NOT_FOUND
-            );
-        }
-        urlService.incTotal(url.getId());
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("REDIRECT", url.getUrl());
-        return new ResponseEntity<>(
-                httpHeaders, HttpStatus.MOVED_TEMPORARILY
-        );
+        return urlService.redirectUrl(code);
     }
 
     /**
@@ -88,5 +87,25 @@ public class MainRestController {
     @GetMapping("/statistic")
     public List<Statistic> getStatistic() {
         return siteService.getStatistic();
+    }
+
+    /**
+     * Выполняет локальный (уровня контроллера) перехват исключений
+     * NoSuchElementException, в случае перехвата, выполняет логирование
+     * и возвращает клиенту ответ с комментарием исключения.
+     *
+     * @param e перехваченное исключение
+     * @param response ответ клиенту
+     */
+    @ExceptionHandler(value = { NoSuchElementException.class })
+    public void exceptionHandler(Exception e, HttpServletResponse response)
+            throws IOException {
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setContentType("application/json");
+        response.getWriter().write(objectMapper.writeValueAsString(new HashMap<>() { {
+            put("message", e.getMessage());
+            put("type", e.getClass());
+        }}));
+        log.error(e.getLocalizedMessage());
     }
 }

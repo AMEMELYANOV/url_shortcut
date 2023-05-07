@@ -5,6 +5,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import ru.job4j.shortcut.model.Site;
 
+import java.util.Optional;
+
 /**
  * Хранилище сайтов
  *
@@ -21,7 +23,7 @@ public interface SiteRepository extends CrudRepository<Site, Long> {
      * @param site наименование сайта
      * @return сайт
      */
-    Site findBySite(String site);
+    Optional<Site> findBySite(String site);
 
     /**
      * Выполняет поиск и возврат сайта по логину.
@@ -29,5 +31,5 @@ public interface SiteRepository extends CrudRepository<Site, Long> {
      * @param login логин
      * @return сайт
      */
-    Site findByLogin(String login);
+    Optional<Site> findByLogin(String login);
 }

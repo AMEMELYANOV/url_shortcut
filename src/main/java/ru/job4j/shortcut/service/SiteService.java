@@ -11,9 +11,11 @@ import ru.job4j.shortcut.model.URL;
 import ru.job4j.shortcut.repository.SiteRepository;
 import ru.job4j.shortcut.repository.URLRepository;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * Сервис по работе с сайтами
@@ -54,10 +56,12 @@ public class SiteService {
      * @param site сайт
      * @return новый объект SiteRegResponse
      */
+    @Transactional
     public SiteRegResponse registerSite(Site site) {
-        Site siteFromDB = siteRepository.findBySite(site.getSite());
-        if (siteFromDB != null) {
-            return new SiteRegResponse("false", siteFromDB.getLogin(), "Сайт зарегистрирован ранее!");
+        Optional<Site> siteFromDB = siteRepository.findBySite(site.getSite());
+        if (siteFromDB.isPresent()) {
+            return new SiteRegResponse("false", siteFromDB.get().getLogin(),
+                    "Сайт зарегистрирован ранее!");
         }
         String password = generatorService.generatePassword();
         site.setLogin(generatorService.generateLogin());
@@ -68,33 +72,38 @@ public class SiteService {
 
     /**
      * Выполняет вызов метода репозитория поиска сайта по логину.
+     * Если сайт не найден, будет выброшено исключение.
      *
      * @param login логин сайта
      * @return сайт
+     * @throws NoSuchElementException если сайт по логину не найден
      */
+    @Transactional
     public Site findByLogin(String login) {
-        return siteRepository.findByLogin(login);
+        return siteRepository.findByLogin(login)
+                .orElseThrow(() -> new NoSuchElementException(
+                        String.format("Site with login - '%s' not found", login))
+                );
     }
 
     /**
      * Выполняет возврат списка объектов статистики по текущему сайту,
-     * вызывая метод репозитория.
-     * Если сайт не найден, будет возвращен пустой список.
+     * вызывая метод репозитория. Если сайт не найден, будет выброшено исключение.
      *
      * @return список объектов статистики
+     * @throws NoSuchElementException если сайт не найден
      */
+    @Transactional
     public List<Statistic> getStatistic() {
         String siteLogin = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Site site = siteRepository.findByLogin(siteLogin);
-        if (site == null) {
-            return Collections.emptyList();
-        }
+        Site site = siteRepository.findByLogin(siteLogin)
+                .orElseThrow(() -> new NoSuchElementException(
+                String.format("Site with login - '%s' not found", siteLogin))
+        );
         Long siteId = site.getId();
         List<URL> urls = urlRepository.findAllBySiteId(siteId);
         List<Statistic> result = new ArrayList<>();
-        for (URL url : urls) {
-            result.add(new Statistic(url.getUrl(), url.getTotal()));
-        }
+        urls.forEach(url -> result.add(new Statistic(url.getUrl(), url.getTotal())));
         return result;
     }
 }

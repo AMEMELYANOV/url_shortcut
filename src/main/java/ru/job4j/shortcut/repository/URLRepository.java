@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.job4j.shortcut.model.URL;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Хранилище url ссылок
@@ -23,7 +24,7 @@ public interface URLRepository extends CrudRepository<URL, Long> {
      * @param url наименование url ссылки
      * @return url ссылка
      */
-    URL findByurl(String url);
+    Optional<URL> findByUrl(String url);
 
     /**
      * Выполняет поиск и возврат url ссылки по коду.
@@ -31,7 +32,7 @@ public interface URLRepository extends CrudRepository<URL, Long> {
      * @param code код url ссылки
      * @return url ссылка
      */
-    URL findByCode(String code);
+    Optional<URL> findByCode(String code);
 
     /**
      * Выполняет увеличение счетчика посещений url.

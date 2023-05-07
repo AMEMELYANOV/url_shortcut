@@ -1,13 +1,19 @@
 package ru.job4j.shortcut.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import ru.job4j.shortcut.model.Site;
 import ru.job4j.shortcut.model.URL;
 import ru.job4j.shortcut.model.URLResponse;
 import ru.job4j.shortcut.repository.SiteRepository;
 import ru.job4j.shortcut.repository.URLRepository;
 
+import javax.transaction.Transactional;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -39,16 +45,26 @@ public class URLService {
      * Выполняет конвертацию url в символьный код. Если url
      * отсутствует в базе, происходит сохранение нового объекта
      * через метод репозитория. Возвращает новый объект URLResponse
-     * с внедренным кодом.
+     * с внедренным кодом. Если в базе не найдено url или сайт, будет
+     * выброшено исключение.
      *
      * @param url ссылка
      * @return объект URLResponse с внедренным кодом url
+     * @throws NoSuchElementException если url не найдено или не найден сайт
      */
+    @Transactional
     public URLResponse convertURL(URL url) {
-        URL urlFromDB = urlRepository.findByurl(url.getUrl());
+        URL urlFromDB = urlRepository.findByUrl(url.getUrl())
+                .orElseThrow(() -> new NoSuchElementException(
+                        String.format("Url with name - '%s' not found", url.getUrl()))
+                );
         String siteLogin = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Long siteId = siteRepository.findByLogin(siteLogin).getId();
-        if (urlFromDB != null && Objects.equals(siteId, urlFromDB.getSiteId())) {
+        Site site = siteRepository.findByLogin(siteLogin)
+                .orElseThrow(() -> new NoSuchElementException(
+                        String.format("Site with login - '%s' not found", siteLogin))
+                );
+        Long siteId = site.getId();
+        if (Objects.equals(siteId, urlFromDB.getSiteId())) {
             return new URLResponse(urlFromDB.getCode());
         }
         String urlCode = generatorService.generateURL();
@@ -59,22 +75,25 @@ public class URLService {
     }
 
     /**
-     * Вызывает метод репозитория для нахождения и возврат url по коду.
+     * Вызывает метод репозитория для нахождения url по коду url
+     * и возврат ResponseEntity c url. Если код введен неверно
+     * будет выброшено исключение с сообщением о неправильно введенных данных.
      *
      * @param code код url
-     * @return объект url
+     * @return объект ResponseEntity c url
+     * @throws NoSuchElementException если url c переданным кодом не найден
      */
-    public URL findByCode(String code) {
-        return urlRepository.findByCode(code);
-    }
-
-    /**
-     * Вызывает метод репозитория для выполнения увеличения счетчика посещений url
-     * по переданному идентификатору url.
-     *
-     * @param id идентификатор url
-     */
-    public void incTotal(Long id) {
-        urlRepository.incTotal(id);
+    @Transactional
+    public ResponseEntity<Void> redirectUrl(String code) {
+        URL url = urlRepository.findByCode(code)
+                .orElseThrow(() -> new NoSuchElementException(
+                        String.format("URL with code - '%s' not found", code))
+                );
+        urlRepository.incTotal(url.getId());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("REDIRECT", url.getUrl());
+        return new ResponseEntity<>(
+                httpHeaders, HttpStatus.MOVED_TEMPORARILY
+        );
     }
 }
