@@ -16,12 +16,31 @@ import java.util.ArrayList;
 
 import static ru.job4j.shortcut.filter.JWTAuthenticationFilter.*;
 
+/**
+ * Фильтр запросов с JWT токеном
+ *
+ * @author Alexander Emelyanov
+ * @version 1.0
+ */
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
+    /**
+     * Конструктор
+     *
+     * @param authenticationManager менеджер аутентификации
+     */
     public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
 
+    /**
+     * Проверяет наличие JWT токена в хедерах запроса, если успешно,
+     * устанавливает аутентификацию в контекст безопасности.
+     *
+     * @param request запрос пользователя
+     * @param response ответ пользователю
+     * @param chain цепь фильтров
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -36,6 +55,13 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         chain.doFilter(request, response);
     }
 
+    /**
+     * Создает пользовательский объект на основании JWT токена
+     * и возвращает его.
+     *
+     * @param request запрос пользователя
+     * @return объект аутентификации
+     */
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(HEADER_STRING);
         if (token != null) {
