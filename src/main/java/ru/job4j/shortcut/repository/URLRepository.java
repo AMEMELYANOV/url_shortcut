@@ -19,12 +19,12 @@ import java.util.Optional;
 public interface URLRepository extends CrudRepository<URL, Long> {
 
     /**
-     * Выполняет поиск и возврат url ссылки по наименованию.
+     * Выполняет поиск и возврат списка url ссылок по наименованию.
      *
      * @param url наименование url ссылки
-     * @return url ссылка
+     * @return список url ссылок
      */
-    Optional<URL> findByUrl(String url);
+    List<URL> findByUrl(String url);
 
     /**
      * Выполняет поиск и возврат url ссылки по коду.
@@ -41,7 +41,7 @@ public interface URLRepository extends CrudRepository<URL, Long> {
      */
     @Transactional
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(value = "update URL u set u.total = u.total + 1 where u.id = :id")
+    @Query(value = "UPDATE URL u SET u.total = u.total + 1 WHERE u.id = :id")
     void incTotal(Long id);
 
     /**

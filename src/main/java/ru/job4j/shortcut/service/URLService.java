@@ -13,8 +13,10 @@ import ru.job4j.shortcut.repository.SiteRepository;
 import ru.job4j.shortcut.repository.URLRepository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Сервис по работе с URL
@@ -45,27 +47,25 @@ public class URLService {
      * Выполняет конвертацию url в символьный код. Если url
      * отсутствует в базе, происходит сохранение нового объекта
      * через метод репозитория. Возвращает новый объект URLResponse
-     * с внедренным кодом. Если в базе не найдено url или сайт, будет
+     * с внедренным кодом. Если в базе не найден сайт, будет
      * выброшено исключение.
      *
      * @param url ссылка
      * @return объект URLResponse с внедренным кодом url
-     * @throws NoSuchElementException если url не найдено или не найден сайт
+     * @throws NoSuchElementException если не найден сайт
      */
     @Transactional
     public URLResponse convertURL(URL url) {
-        URL urlFromDB = urlRepository.findByUrl(url.getUrl())
-                .orElseThrow(() -> new NoSuchElementException(
-                        String.format("Url with name - '%s' not found", url.getUrl()))
-                );
+        List<URL> urlsFromDB = urlRepository.findByUrl(url.getUrl());
         String siteLogin = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Site site = siteRepository.findByLogin(siteLogin)
                 .orElseThrow(() -> new NoSuchElementException(
                         String.format("Site with login - '%s' not found", siteLogin))
                 );
+        Optional<URL> urlFromDB = urlsFromDB.stream().filter(u -> u.getSiteId().equals(site.getId())).findFirst();
         Long siteId = site.getId();
-        if (Objects.equals(siteId, urlFromDB.getSiteId())) {
-            return new URLResponse(urlFromDB.getCode());
+        if (urlFromDB.isPresent() && Objects.equals(siteId, urlFromDB.get().getSiteId())) {
+            return new URLResponse(urlFromDB.get().getCode());
         }
         String urlCode = generatorService.generateURL();
         url.setSiteId(siteId);
