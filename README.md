@@ -1,9 +1,4 @@
-[![Build Status](https://app.travis-ci.com/AMEMELYANOV/job4j_url_shortcut.svg?branch=master)](https://app.travis-ci.com/AMEMELYANOV/job4j_url_shortcut)
-[![codecov](https://codecov.io/gh/AMEMELYANOV/job4j_url_shortcut/branch/master/graph/badge.svg?token=o0DgrIlfhK)](https://codecov.io/gh/AMEMELYANOV/job4j_url_shortcut)
-
-# job4j_url_shortcut
-
-# **Проект - Кодирование URL ссылок**
+# URL_shortcut
 
 ## <p id="contents">Оглавление</p>
 
@@ -48,8 +43,7 @@
 
 ## <p id="01">Описание проекта</p>
 
-Сервис работает через REST API.
-Для обеспечения безопасности пользователей, все ссылки на сайте заменяются ссылками на сервис.
+Сервис REST API для кодирования html ссылок во внутренние коды сервиса.
 
 Функционал:
 
@@ -64,11 +58,9 @@
 ## <p id="02">Стек технологий</p>
 
 - Java 11
-- Spring Boot 2.6
-- Spring Security & JWT authorization
-- Spring Data
-- PostgreSQL 14
-- JUnit 5
+- Spring Boot 2.7, Spring Security, Spring Data
+- PostgreSQL 14, Liquibase 4
+- JUnit 5, Mockito
 - Maven 3.8
 - Lombok 1.18
 
