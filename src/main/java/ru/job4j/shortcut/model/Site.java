@@ -1,6 +1,7 @@
 package ru.job4j.shortcut.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import javax.persistence.*;
  * @author Alexander Emelyanov
  * @version 1.0
  */
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

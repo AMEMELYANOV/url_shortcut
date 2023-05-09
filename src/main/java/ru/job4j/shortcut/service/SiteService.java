@@ -1,21 +1,11 @@
 package ru.job4j.shortcut.service;
 
-import lombok.AllArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
 import ru.job4j.shortcut.model.Site;
 import ru.job4j.shortcut.model.SiteRegResponse;
 import ru.job4j.shortcut.model.Statistic;
-import ru.job4j.shortcut.model.URL;
-import ru.job4j.shortcut.repository.SiteRepository;
-import ru.job4j.shortcut.repository.URLRepository;
 
-import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 /**
  * Сервис по работе с сайтами
@@ -23,29 +13,7 @@ import java.util.Optional;
  * @author Alexander Emelyanov
  * @version 1.0
  */
-@AllArgsConstructor
-@Service
-public class SiteService {
-
-    /**
-     * Объект для доступа к методам SiteRepository
-     */
-    private final SiteRepository siteRepository;
-
-    /**
-     * Объект для доступа к методам GeneratorService
-     */
-    private final GeneratorService generatorService;
-
-    /**
-     * Объект для доступа к методам URLRepository
-     */
-    private final URLRepository urlRepository;
-
-    /**
-     * Шифратор паролей
-     */
-    private final BCryptPasswordEncoder encoder;
+public interface SiteService {
 
     /**
      * Выполняет создание и возврат нового объекта SiteRegResponse,
@@ -56,19 +24,7 @@ public class SiteService {
      * @param site сайт
      * @return новый объект SiteRegResponse
      */
-    @Transactional
-    public SiteRegResponse registerSite(Site site) {
-        Optional<Site> siteFromDB = siteRepository.findBySite(site.getSite());
-        if (siteFromDB.isPresent()) {
-            return new SiteRegResponse("false", siteFromDB.get().getLogin(),
-                    "Сайт зарегистрирован ранее!");
-        }
-        String password = generatorService.generatePassword();
-        site.setLogin(generatorService.generateLogin());
-        site.setPassword(encoder.encode(password));
-        Site newSite = siteRepository.save(site);
-        return new SiteRegResponse("true", newSite.getLogin(), password);
-    }
+    SiteRegResponse registerSite(Site site);
 
     /**
      * Выполняет вызов метода репозитория поиска сайта по логину.
@@ -78,13 +34,7 @@ public class SiteService {
      * @return сайт
      * @throws NoSuchElementException если сайт по логину не найден
      */
-    @Transactional
-    public Site findByLogin(String login) {
-        return siteRepository.findByLogin(login)
-                .orElseThrow(() -> new NoSuchElementException(
-                        String.format("Site with login - '%s' not found", login))
-                );
-    }
+    Site findByLogin(String login);
 
     /**
      * Выполняет возврат списка объектов статистики по текущему сайту,
@@ -93,17 +43,5 @@ public class SiteService {
      * @return список объектов статистики
      * @throws NoSuchElementException если сайт не найден
      */
-    @Transactional
-    public List<Statistic> getStatistic() {
-        String siteLogin = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Site site = siteRepository.findByLogin(siteLogin)
-                .orElseThrow(() -> new NoSuchElementException(
-                String.format("Site with login - '%s' not found", siteLogin))
-        );
-        Long siteId = site.getId();
-        List<URL> urls = urlRepository.findAllBySiteId(siteId);
-        List<Statistic> result = new ArrayList<>();
-        urls.forEach(url -> result.add(new Statistic(url.getUrl(), url.getTotal())));
-        return result;
-    }
+    List<Statistic> getStatistic();
 }
