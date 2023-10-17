@@ -1,8 +1,8 @@
 version: "2"
 services:
-  db:
+  db_shortcut:
     image: postgres
-    container_name: db
+    container_name: db_shortcut
     volumes:
       - ./db/shortcut/data:/var/lib/postgresql/data
     environment:
@@ -11,14 +11,15 @@ services:
       - POSTGRES_DB=shortcut
       - PGDATA=/var/lib/postgresql/data
     restart: always
-  app:
-    image: shortcut
-    container_name: shortcut
+  app_shortcut:
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shortcut
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db_shortcut:5432/shortcut
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=password
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      - db_shortcut
